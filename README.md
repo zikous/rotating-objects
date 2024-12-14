@@ -11,14 +11,6 @@ This project involves creating and rendering 3D models with rotation functionali
 - **2D Projection**: Projects 3D points to 2D for rendering on the screen.
 - **UI**: Simple menu-based UI for selecting models and interacting with the 3D visualization using keyboard inputs.
 
-## Files
-
-- `Model.py`: Contains the base class `Model` and derived classes for different 3D models. Includes methods for applying transformations (translation and rotation) and drawing the models.
-- `main.py`: Entry point of the application. Sets up the Pygame window and handles the rendering loop.
-- `matrix_operations.py`: Helper functions for matrix operations used in transformations.
-- `matrix_rotation.py`: Functions for generating rotation matrices for each axis.
-- `__pycache__/`: Folder for Python's compiled bytecode files.
-
 ## Requirements
 
 - Python 3.x

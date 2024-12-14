@@ -1,87 +1,107 @@
 import pygame
-from Model import *  # Make sure to import the updated Model class
+from Model.Model import *  # Import the updated Model class
+from Model.ModelExamples import *
 
-# Define a list of model types
+# Define a dictionary of available 3D model types
 MODEL_CLASSES = {
     "Cube": Cube,
     "Tetrahedron": Tetrahedron,
     "Pyramid": Pyramid,
     "Octahedron": Octahedron,
-    # You can easily add new models here
+    # Easily add more models here
 }
 
 
 def display_menu(screen, model_names, selected_index):
-    font = pygame.font.Font(None, 36)
+    """
+    Displays the menu where the user can select a 3D model.
+
+    Args:
+        screen: Pygame screen object.
+        model_names: List of model names.
+        selected_index: Index of the currently selected model.
+    """
+    font = pygame.font.Font(None, 36)  # Set font for text
+
+    # Menu text lines, including instructions
     menu_text = [
         "Select a model to view:",
         *[f"Press {i+1} for {name}" for i, name in enumerate(model_names)],
         "Press ESC to quit",
     ]
 
-    screen.fill((255, 255, 255))  # Fill screen with white background
+    screen.fill((255, 255, 255))  # Clear the screen with a white background
 
-    # Highlight the selected model
+    # Render each menu line, highlighting the selected option
     for i, line in enumerate(menu_text):
-        color = (0, 0, 0)
-        if i == selected_index + 1:  # Highlight the selected option
-            color = (255, 0, 0)  # Red color for the selected option
+        color = (0, 0, 0)  # Default text color: black
+        if i == selected_index + 1:  # Highlight selected option
+            color = (255, 0, 0)  # Highlight color: red
         text_surface = font.render(line, True, color)
-        screen.blit(text_surface, (20, 30 + i * 40))
+        screen.blit(text_surface, (20, 30 + i * 40))  # Position menu text
 
-    pygame.display.flip()
+    pygame.display.flip()  # Update the display
 
 
 def main():
+    """
+    Main function for running the 3D model visualization program.
+    """
+    # Initialize Pygame
     pygame.init()
 
-    WIDTH = 800
-    HEIGHT = 600
-    screen_size = (WIDTH, HEIGHT)
-    screen = pygame.display.set_mode(screen_size)
+    # Screen dimensions and settings
+    WIDTH, HEIGHT = 800, 600
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("3D Model Visualization")
 
-    SIZE = 200
-    ROTATION_SPEED = 0.03
-    model = None  # Start with no model
-    model_names = list(MODEL_CLASSES.keys())  # Get the names of the models
-    selected_index = 0  # Initially, the first model is selected
+    # Model settings
+    SIZE = 200  # Size of the models
+    ROTATION_SPEED = 0.03  # Speed of rotation for models
 
+    # Variables for program state
+    model = None  # Current model object
+    model_names = list(MODEL_CLASSES.keys())  # List of model names
+    selected_index = 0  # Index of the currently selected model
+    in_menu = True  # Flag for whether the menu is active
+
+    # Pygame clock to control frame rate
     clock = pygame.time.Clock()
-    running = True
-    in_menu = True  # Flag to check if we are in the menu or viewing the model
+    running = True  # Main loop control variable
 
+    # Main program loop
     while running:
-        clock.tick(60)  # Limit the frame rate to 60 FPS
+        clock.tick(60)  # Limit frame rate to 60 FPS
 
-        # Event handling
+        # Handle events
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT:  # Quit program
                 running = False
+
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
+                if event.key == pygame.K_ESCAPE:  # Quit on ESC
                     running = False
-                # Handle model selection using arrow keys
+
                 if in_menu:
-                    if event.key == pygame.K_UP:  # Move up in the menu
+                    # Navigate menu with arrow keys
+                    if event.key == pygame.K_UP:  # Move up
                         selected_index = (selected_index - 1) % len(model_names)
-                    if event.key == pygame.K_DOWN:  # Move down in the menu
+                    if event.key == pygame.K_DOWN:  # Move down
                         selected_index = (selected_index + 1) % len(model_names)
-                    # Handle Enter key for model selection
-                    if event.key == pygame.K_RETURN:
+                    if event.key == pygame.K_RETURN:  # Select model
                         model = MODEL_CLASSES[model_names[selected_index]](SIZE)
                         in_menu = False  # Switch to 3D view
-                else:  # Handle rotation and back to menu when viewing the model
-                    if event.key == pygame.K_b:  # Back to menu
+                else:
+                    # Handle back-to-menu input in 3D view
+                    if event.key == pygame.K_b:
                         in_menu = True
                         model = None  # Reset model
 
         if in_menu:
-            display_menu(
-                screen, model_names, selected_index
-            )  # Show the menu if no model is selected
+            # Display the menu when active
+            display_menu(screen, model_names, selected_index)
         else:
-            # Handle continuous key press for rotation
+            # Handle model rotation with key presses
             keys = pygame.key.get_pressed()
             if keys[pygame.K_z] or keys[pygame.K_UP]:
                 model.apply_rotation(ROTATION_SPEED, 0, 0)
@@ -92,17 +112,19 @@ def main():
             if keys[pygame.K_q] or keys[pygame.K_LEFT]:
                 model.apply_rotation(0, -ROTATION_SPEED, 0)
 
-            # Draw the model
-            screen.fill((255, 255, 255))  # Fill screen with white background
-            model.draw(screen)
+            # Render the model
+            screen.fill((255, 255, 255))  # Clear screen
+            model.draw(screen)  # Draw the model
 
-            # Display a "Back to Menu" instruction
+            # Display instructions for returning to menu
             font = pygame.font.Font(None, 36)
             back_text = font.render("Press 'B' to go back to menu", True, (0, 0, 0))
             screen.blit(back_text, (20, HEIGHT - 50))
 
-        pygame.display.flip()  # Update the display
+        # Update the display
+        pygame.display.flip()
 
+    # Quit Pygame when loop exits
     pygame.quit()
 
 
